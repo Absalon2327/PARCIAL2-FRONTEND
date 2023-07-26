@@ -1,0 +1,148 @@
+<app-loader></app-loader>
+<app-page-title
+  title="Vehículos"
+  [breadcrumbItems]="breadCrumbItems"
+></app-page-title>
+<div class="col-12">
+  <div class="card">
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-sm-4">
+          <div class="search-box me-2 mb-2 d-inline-block">
+            <div class="position-relative">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Buscar..."
+                [(ngModel)]="term"
+              />
+              <i class="bx bx-search-alt search-icon"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-8">
+          <div class="text-sm-end">
+            <button
+              type="button"
+              class="btn btn-success btn-rounded mb-2 mr-2"
+              (click)="openModal(content)"
+            >
+              <i class="mdi mdi-plus me-1"></i> Nuevo Tipo de Vehículo
+            </button>
+          </div>
+        </div>
+        <!-- end col (click)="openModal(content)"-->
+      </div>
+      <div class="row mt-4">
+        <div class="table-responsive mb-0">
+          <div id="htmlData">
+            <table class="table table-centered table-nowrap">
+              <thead class="table-light">
+                <tr>
+                  <th class="align-middle">Id</th>
+                  <th class="align-middle">Vista</th>
+                  <th class="align-middle">Tipo de Vehículo</th>
+                  <th class="align-middle">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="
+                    let data of tipoVehiculo
+                      | filter : queryString
+                      | paginate : { itemsPerPage: 10, currentPage: p };
+                    let i = index
+                  "
+                >
+                  <td class="col-3">
+                    {{ i + 1 }}
+                  </td>
+                  <td class="col-3">
+                    <div class="avatar-md profile-user-wid mt-1">
+                      <img
+                        src="assets/images/vehiculo.png"
+                        alt=""
+                        class="img-thumbnail rounded-circle"
+                      />
+                    </div>
+                  </td>
+                  <td class="col-3">{{ data.tipoVehiculo }}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn btn-warning btn-rounded mb-2 mr-2"
+                    >
+                      <i class="mdi mdi-pencil me-1"></i> Editar
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-rounded mb-2 mr-2"
+                      (click)="eliminar(data)"
+                    >
+                      <i class="fas fa-trash-alt me-1"></i> Eliminar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="pagination pagination-rounded justify-content-end mb-2">
+              <pagination-controls
+                (pageChange)="p = $event"
+              ></pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #content role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title mt-0">Nuevo Tipo de Vehículo</h5>
+    <button
+      type="button"
+      class="btn-close"
+      aria-hidden="true"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form (ngSubmit)="guardar()" [formGroup]="formTVehiculo">
+      <div class="row">
+        <div class="col-12">
+          <div class="mb-3">
+            <label class="control-label">Tipo</label>
+            <input
+              class="form-control"
+              placeholder="Ingrese un Tipo de Vehículo"
+              type="text"
+              autocomplete="off"
+              formControlName="tipoVehiculo"
+              [class]="esCampoValido('tipoVehiculo')"
+            />
+            <div class="invalid-feedback">
+              <span *ngIf="formTVehiculo.get('tipoVehiculo')?.errors?.['required']">
+                Ingrese un Nombre
+              </span>
+              <span *ngIf="formTVehiculo.get('tipoVehiculo')?.errors?.['pattern']">
+                Sólo letras
+              </span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="control-label">Fotografía</label>
+           
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success" id="btn-save-event">
+        <i class="mdi mdi-content-save"></i>
+        Guardar
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cross click')" id="btn-save-event">
+        <i class="mdi mdi-file-excel-box"></i>
+        Cancelar
+      </button>
+    </form>
+  </div>
+</ng-template>
