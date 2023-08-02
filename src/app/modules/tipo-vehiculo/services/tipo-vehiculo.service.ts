@@ -20,6 +20,13 @@ export class TipoVehiculoService {
     return this.http.post(`${this.url}/vehiculo`, tipoV);
   }
 
+  editarTipoVehiculo(tipoV: TipoVehiculo){
+
+    console.log("tipoV in service: ", tipoV);
+    
+    return this.http.put(`${this.url}/vehiculo`, tipoV);
+  }
+
   eliminarTipoVehiculo(id: number):Observable<TipoVehiculo>{
     return this.http.delete<TipoVehiculo>(`${this.url}/vehiculo/${id}`);
   }

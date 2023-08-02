@@ -25,7 +25,7 @@
             <button
               type="button"
               class="btn btn-danger btn-rounded mb-2 mr-2"
-              (click)="openModal(content)"
+              (click)="openModal(content, ItipoVehiculo)"
             >
               <i class="mdi mdi-plus me-1"></i> Nuevo Tipo de Vehículo
             </button>
@@ -71,6 +71,7 @@
                     <button
                       type="button"
                       class="btn btn-secondary btn-rounded mb-2 mr-2"
+                      (click)="openModal(content, data)"
                     >
                       <i class="mdi mdi-pencil me-1"></i> Editar
                     </button>
@@ -137,7 +138,7 @@
       </div>
       <button type="submit" class="btn btn-danger" id="btn-save-event">
         <i class="mdi mdi-content-save"></i>
-        Guardar
+        {{leyenda}}
       </button>
       <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cross click')" id="btn-save-event">
         <i class="mdi mdi-file-excel-box"></i>

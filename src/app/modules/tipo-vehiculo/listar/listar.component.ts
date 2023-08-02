@@ -1,18 +1,12 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { TipoVehiculoService } from "../services/tipo-vehiculo.service";
-import { TipoVehiculo } from "../interfaces/tipo-vehiculo.interface";
+import { TipoVehiculo} from "../interfaces/tipo-vehiculo.interface";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
-import {
-  NAME_VALIDATE,
-  NUMBER_VALIDATE,
-  URLIMAGENES,
-} from "../../constants/constants";
+import { NAME_VALIDATE, NUMBER_VALIDATE } from "../../constants/constants";
 import { DropzoneConfigInterface } from "ngx-dropzone-wrapper";
 import Swal from "sweetalert2";
-import { Login2Component } from "../../../account/auth/login2/login2.component";
-
 @Component({
   selector: "app-listar",
   templateUrl: "./listar.component.html",
@@ -26,6 +20,7 @@ export class ListarComponent implements OnInit {
   private isNumero: string = NUMBER_VALIDATE;
   term: string;
   breadCrumbItems: Array<{}>;
+  leyenda!: string;
 
   constructor(
     private tvService: TipoVehiculoService,
@@ -58,6 +53,7 @@ export class ListarComponent implements OnInit {
     ];
     this.getTipoVehiculos();
     this.formTVehiculo = this.iniciarFormulario();
+    
   }
   @Input() queryString: string;
   p: any;
@@ -80,11 +76,11 @@ export class ListarComponent implements OnInit {
     });
   }
 
-  loadTipo(tipoV: TipoVehiculo) {
-    if (tipoV) {
-      console.log("tipoV: ", tipoV);
+  loadTipo() {
+    if (this.ItipoVehiculo) {
+      console.log("tipoV en load: ", this.ItipoVehiculo);
       this.formTVehiculo.reset({
-        tipoVehiculo: tipoV.tipoVehiculo,
+        tipoVehiculo: this.ItipoVehiculo.tipoVehiculo,
       });
     }
   }
@@ -96,9 +92,14 @@ export class ListarComponent implements OnInit {
         title: "Faltan datos en el formulario",
         text: "submit disparado, formulario No valido",
         icon: "warning",
+        confirmButtonColor: "#dc3545",
       });
     } else {
-      this.guardarTipoVehiculo();
+      if (this.ItipoVehiculo != null) {
+        this.editando();
+      } else {
+        this.guardarTipoVehiculo();
+      }
     }
     return Object.values(this.formTVehiculo.controls).forEach((control) =>
       control.markAsTouched()
@@ -141,9 +142,52 @@ export class ListarComponent implements OnInit {
       },
     });
   }
-  modificar() {}
+  modificar() {
+    if (this.formTVehiculo.invalid) {
+      Swal.fire({
+        position: "center",
+        title: "Faltan datos en el formulario",
+        text: "submit disparado, formulario No valido",
+        icon: "warning",
+        confirmButtonColor: "#dc3545",
+      });
+    } else {
+      this.editando();
+    }
+    return Object.values(this.formTVehiculo.controls).forEach((control) =>
+      control.markAsTouched()
+    );
+  }
 
-  editando() {}
+  editando() {
+
+    this.ItipoVehiculo.tipoVehiculo =
+      this.formTVehiculo.get("tipoVehiculo")?.value;
+     
+
+    console.log("tipoVehiculo in met edit: ", this.ItipoVehiculo);
+    this.tvService.editarTipoVehiculo(this.ItipoVehiculo).subscribe({
+      next: (resp) => {
+        if (resp) {
+          Swal.fire({
+            position: "center",
+            title: "Buen trabajo",
+            text: "Datos modificados con exito",
+            icon: "success",
+          });
+          this.formTVehiculo.reset();
+          this.modalService.dismissAll();
+        }
+      },
+      error: () => {
+        Swal.fire({
+          title: "Error",
+          text: "Algo pasó al editar, hable con el Administrador",
+          icon: "error",
+        });
+      },
+    });
+  }
 
   eliminar(id: TipoVehiculo) {
     Swal.fire({
@@ -191,8 +235,16 @@ export class ListarComponent implements OnInit {
       ? "is-valid"
       : "";
   }
-  openModal(content: any) {
-    console.log("Tipo Vehículo: ", this.ItipoVehiculo);
+  openModal(content: any, tipoV: TipoVehiculo) {
+    this.ItipoVehiculo = tipoV;
+    if (tipoV == null) {
+      this.leyenda = "Guardar";
+    } else {
+      this.leyenda = "Modificar";
+      this.loadTipo();
+    }
+
+    console.log("Tipo Vehículo modal: ", this.ItipoVehiculo);
     this.modalService.open(content, { centered: true });
   }
   reload() {
