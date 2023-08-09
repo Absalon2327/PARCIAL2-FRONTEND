@@ -10,10 +10,13 @@ import { HttpClientModule } from "@angular/common/http";
 import { Ng2SearchPipeModule } from "ng2-search-filter";
 import { NgbModalModule, NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgxPaginationModule } from 'ngx-pagination';
-import { DropzoneModule } from "ngx-dropzone-wrapper";
+import { DROPZONE_CONFIG, DropzoneConfigInterface, DropzoneModule } from "ngx-dropzone-wrapper";
 import { NgApexchartsModule } from "ng-apexcharts";
 import { ChartsModule } from "ng2-charts";
 import { NgxChartistModule } from "ngx-chartist";
+const config: DropzoneConfigInterface = {
+  url:'http://'
+};
 
 @NgModule({
   declarations: [ListarComponent, ReportesComponent],
@@ -33,5 +36,11 @@ import { NgxChartistModule } from "ngx-chartist";
     ChartsModule,
     NgxChartistModule
   ],
+  providers:[
+    {
+      provide: DROPZONE_CONFIG,
+      useValue: config,
+    },
+  ]
 })
 export class TipoVehiculoModule {}

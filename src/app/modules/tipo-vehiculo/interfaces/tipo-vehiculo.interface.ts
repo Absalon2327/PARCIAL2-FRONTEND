@@ -1,5 +1,5 @@
-
-export interface TipoVehiculo{
-    id: number;
-    tipoVehiculo: string;
+export interface TipoVehiculo {
+  id: number;
+  tipoVehiculo: string;
+  urlImagen: string;
 }

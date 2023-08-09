@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { TipoVehiculoService } from "../services/tipo-vehiculo.service";
-import { TipoVehiculo} from "../interfaces/tipo-vehiculo.interface";
+import { TipoVehiculo } from "../interfaces/tipo-vehiculo.interface";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
@@ -14,13 +14,19 @@ import Swal from "sweetalert2";
 })
 export class ListarComponent implements OnInit {
   tipoVehiculo!: TipoVehiculo[];
+  tipoVehiculoImagen: TipoVehiculo[] = [];
   ItipoVehiculo!: TipoVehiculo;
   formTVehiculo!: FormGroup;
   private isLetras: string = NAME_VALIDATE;
   private isNumero: string = NUMBER_VALIDATE;
+  private imagen: File;
   term: string;
   breadCrumbItems: Array<{}>;
   leyenda!: string;
+  btnNuevo: string = "0";
+
+  //para el dropzone
+  myFiles: File[] = [];
 
   constructor(
     private tvService: TipoVehiculoService,
@@ -31,20 +37,20 @@ export class ListarComponent implements OnInit {
 
   config: DropzoneConfigInterface = {
     // Change this to your upload POST address:
-    /*  maxFilesize: 50,
+    maxFilesize: 2048,
+    addRemoveLinks: true,
+    maxFiles: 1,
     acceptedFiles: "image/*",
-    method: "POST",
-    uploadMultiple: false, <dropzone class="dropzone" [config]="config"></dropzone>
-    accept: (file) => {
-      this.onAccept(file);
-    }, */
+    accept: (file: File) => {
+      this.myFiles.push(file);
+    },
   };
-  image = "";
-  file = "";
-  onAccept(file: any) {
+  /*  image = "";
+  file = ""; */
+  /*  onAccept(file: any) {
     this.image = file.name;
     this.file = file;
-  }
+  } */
 
   ngOnInit(): void {
     this.breadCrumbItems = [
@@ -53,7 +59,6 @@ export class ListarComponent implements OnInit {
     ];
     this.getTipoVehiculos();
     this.formTVehiculo = this.iniciarFormulario();
-    
   }
   @Input() queryString: string;
   p: any;
@@ -81,9 +86,12 @@ export class ListarComponent implements OnInit {
       console.log("tipoV en load: ", this.ItipoVehiculo);
       this.formTVehiculo.reset({
         tipoVehiculo: this.ItipoVehiculo.tipoVehiculo,
+        foto: this.ItipoVehiculo.urlImagen,
       });
     }
   }
+
+  eliminarImagen(file: File) {}
 
   guardar() {
     if (this.formTVehiculo.invalid) {
@@ -160,10 +168,8 @@ export class ListarComponent implements OnInit {
   }
 
   editando() {
-
     this.ItipoVehiculo.tipoVehiculo =
       this.formTVehiculo.get("tipoVehiculo")?.value;
-     
 
     console.log("tipoVehiculo in met edit: ", this.ItipoVehiculo);
     this.tvService.editarTipoVehiculo(this.ItipoVehiculo).subscribe({
@@ -235,11 +241,17 @@ export class ListarComponent implements OnInit {
       ? "is-valid"
       : "";
   }
-  openModal(content: any, tipoV: TipoVehiculo) {
+  openModal(content: any, tipoV: TipoVehiculo, btnNuevo: string) {
+    //Primero reseteo el formulario por si no voy a guardar si no que modificar
+    this.formTVehiculo.reset();
+    //Luego los datos para para poder mostrarlos en el modal
     this.ItipoVehiculo = tipoV;
-    if (tipoV == null) {
+
+    //Pregunto si voy
+    if (btnNuevo == "0") {
       this.leyenda = "Guardar";
     } else {
+      //si se modifica se cargan los datos
       this.leyenda = "Modificar";
       this.loadTipo();
     }
@@ -253,4 +265,15 @@ export class ListarComponent implements OnInit {
     this.router.onSameUrlNavigation = "reload";
     this.router.navigate([currentUrl]);
   }
+
+  generarPdf() {
+    console.log("si llega");
+    
+    this.tvService.generarPDF(
+      "TIPO DE VEHÍCULOS ------ PARCIAL 2",
+      this.tipoVehiculo
+    );
+  }
+
+  descargarPdf() {}
 }

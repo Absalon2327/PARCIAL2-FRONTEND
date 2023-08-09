@@ -6,17 +6,24 @@
 <div class="col-12">
   <div class="card">
     <div class="card-body">
-      <div class="row mb-2">
+      <div class="row mb-1">
         <div class="col-sm-4">
           <div class="search-box me-2 mb-2 d-inline-block">
-            <div class="position-relative">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Buscar..."
-                [(ngModel)]="term"
-              />
-              <i class="bx bx-search-alt search-icon"></i>
+            <div class="position-relative d-flex flex-wrap gap-2 mt-2">
+              <button
+                type="button"
+                class="btn btn-secondary btn-rounded mb-2 mr-2"
+                (click)="generarPdf()"
+              >
+                <i class="bx bxs-file me-1"></i> PDF
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary btn-rounded mb-2 mr-2"
+                (click)="descargarPdf()"
+              >
+                <i class="bx bxs-archive-in me-1"></i> Descargar
+              </button>
             </div>
           </div>
         </div>
@@ -25,7 +32,7 @@
             <button
               type="button"
               class="btn btn-danger btn-rounded mb-2 mr-2"
-              (click)="openModal(content, ItipoVehiculo)"
+              (click)="openModal(content, ItipoVehiculo, (btnNuevo = '0'))"
             >
               <i class="mdi mdi-plus me-1"></i> Nuevo Tipo de Vehículo
             </button>
@@ -33,14 +40,14 @@
         </div>
         <!-- end col (click)="openModal(content)"-->
       </div>
-      <div class="row mt-4">
+      <div class="row mt-1">
         <div class="table-responsive mb-0">
           <div id="htmlData">
             <table class="table table-centered table-nowrap">
               <thead class="table-light">
                 <tr>
                   <th class="align-middle">Id</th>
-                  <th class="align-middle">Vista</th>
+                  <th class="align-middle">Foto</th>
                   <th class="align-middle">Tipo de Vehículo</th>
                   <th class="align-middle">Acciones</th>
                 </tr>
@@ -60,9 +67,9 @@
                   <td class="col-3">
                     <div class="avatar-md profile-user-wid mt-1">
                       <img
-                        src="assets/images/vehiculo.png"
+                        [src]="data.urlImagen"
                         alt=""
-                        class="img-thumbnail rounded-circle"
+                        class="avatar-md h-auto d-block rounded"
                       />
                     </div>
                   </td>
@@ -71,7 +78,7 @@
                     <button
                       type="button"
                       class="btn btn-secondary btn-rounded mb-2 mr-2"
-                      (click)="openModal(content, data)"
+                      (click)="openModal(content, data, (btnNuevo = '1'))"
                     >
                       <i class="mdi mdi-pencil me-1"></i> Editar
                     </button>
@@ -122,25 +129,41 @@
               [class]="esCampoValido('tipoVehiculo')"
             />
             <div class="invalid-feedback">
-              <span *ngIf="formTVehiculo.get('tipoVehiculo')?.errors?.['required']">
+              <span
+                *ngIf="formTVehiculo.get('tipoVehiculo')?.errors?.['required']"
+              >
                 Ingrese un Nombre
               </span>
-              <span *ngIf="formTVehiculo.get('tipoVehiculo')?.errors?.['pattern']">
+              <span
+                *ngIf="formTVehiculo.get('tipoVehiculo')?.errors?.['pattern']"
+              >
                 Sólo letras
               </span>
             </div>
           </div>
           <div class="mb-3">
             <label class="control-label">Fotografía</label>
-           
+            <dropzone
+              id="dropzone"
+              formControlName="foto"
+              class="dropzone"
+              [config]="config"
+              (removedFile)="eliminarImagen($event)"
+              [message]="'Click o arrastrar archivos para subir'"
+            ></dropzone>
           </div>
         </div>
       </div>
       <button type="submit" class="btn btn-danger" id="btn-save-event">
         <i class="mdi mdi-content-save"></i>
-        {{leyenda}}
+        {{ leyenda }}
       </button>
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cross click')" id="btn-save-event">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="modal.dismiss('Cross click')"
+        id="btn-save-event"
+      >
         <i class="mdi mdi-file-excel-box"></i>
         Cancelar
       </button>
