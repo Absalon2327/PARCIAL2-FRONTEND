@@ -14,6 +14,7 @@ PdfMakeWrapper.setFonts(pdfFonts);
 export class TipoVehiculoService {
   url = "http://localhost:8080";
 
+  index:number = 0;
   constructor(private http: HttpClient) {}
 
   getTipoVehiculos(): Observable<TipoVehiculo[]> {
@@ -23,17 +24,20 @@ export class TipoVehiculoService {
   nuevoTipoVehiculo(tipoV: TipoVehiculo) {
     return this.http.post(`${this.url}/vehiculo`, tipoV);
   }
-  nuevoTipoVehiculoImagen(imagen: File[], tipov: TipoVehiculo) {
+
+  nuevoTipoVehiculoImagen(imagen: File, tipov: TipoVehiculo) {
     const formData = new FormData();
-    imagen.forEach((archivo) => {
-      formData.append("imagen", archivo);
-      formData.append("tipoVehiculo", tipov.tipoVehiculo);
-    });
-    return this.http.post(`${this.url}/vehiculo/insertar`, formData).pipe(
-      catchError((err: HttpErrorResponse) => {
-        return this.errorHandler(err);
-      })
-    );
+
+    formData.append("imagen", imagen);
+    formData.append("tipoVehiculo", tipov.tipoVehiculo);
+    return this.http
+      .post<TipoVehiculo[]>(`${this.url}/vehiculo/insertar`, formData)
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          console.log(this.errorHandler(err));
+          return this.errorHandler(err);
+        })
+      );
   }
   errorHandler(error: HttpErrorResponse): Observable<never> {
     if (error.status == 500)
@@ -94,10 +98,7 @@ export class TipoVehiculoService {
           ["", "", ""],
           [
             `${x.id}`,
-            await new Img(`${x.urlImagen}`)
-              .height(50)
-              .width(50)
-              .build(),
+            await new Img(`${x.urlImagen}`).height(50).width(50).build(),
             `${x.tipoVehiculo}`,
           ],
         ])

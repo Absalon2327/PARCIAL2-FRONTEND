@@ -7,6 +7,7 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { NAME_VALIDATE, NUMBER_VALIDATE } from "../../constants/constants";
 import { DropzoneConfigInterface } from "ngx-dropzone-wrapper";
 import Swal from "sweetalert2";
+import { HttpResponse } from '@angular/common/http';
 @Component({
   selector: "app-listar",
   templateUrl: "./listar.component.html",
@@ -19,7 +20,7 @@ export class ListarComponent implements OnInit {
   formTVehiculo!: FormGroup;
   private isLetras: string = NAME_VALIDATE;
   private isNumero: string = NUMBER_VALIDATE;
-  private imagen: File;
+  private imagen: File[];
   term: string;
   breadCrumbItems: Array<{}>;
   leyenda!: string;
@@ -86,7 +87,7 @@ export class ListarComponent implements OnInit {
       console.log("tipoV en load: ", this.ItipoVehiculo);
       this.formTVehiculo.reset({
         tipoVehiculo: this.ItipoVehiculo.tipoVehiculo,
-        foto: this.ItipoVehiculo.urlImagen,
+        
       });
     }
   }
@@ -115,16 +116,11 @@ export class ListarComponent implements OnInit {
   }
 
   guardarTipoVehiculo() {
+    
     const tipoV = this.formTVehiculo.value;
-    this.tvService.nuevoTipoVehiculo(tipoV).subscribe({
+    this.tvService.nuevoTipoVehiculoImagen(this.myFiles[0], tipoV).subscribe({
       next: (response) => {
-        if (response) {
-          Swal.fire({
-            position: "center",
-            title: "Buen trabajo",
-            text: "Datos guardados con exito",
-            icon: "success",
-          });
+       console.log('retorna dentro del if');       
           Swal.fire({
             position: "center",
             icon: "success",
@@ -139,6 +135,9 @@ export class ListarComponent implements OnInit {
               this.modalService.dismissAll();
             }
           });
+        
+        if (response) {   
+          
         }
       },
       error: () => {

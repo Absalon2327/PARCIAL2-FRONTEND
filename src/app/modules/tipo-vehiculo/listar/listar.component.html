@@ -15,14 +15,7 @@
                 class="btn btn-secondary btn-rounded mb-2 mr-2"
                 (click)="generarPdf()"
               >
-                <i class="bx bxs-file me-1"></i> PDF
-              </button>
-              <button
-                type="button"
-                class="btn btn-secondary btn-rounded mb-2 mr-2"
-                (click)="descargarPdf()"
-              >
-                <i class="bx bxs-archive-in me-1"></i> Descargar
+                <i class="bx bxs-file me-1"></i>Generar PDF
               </button>
             </div>
           </div>
@@ -145,7 +138,6 @@
             <label class="control-label">Fotografía</label>
             <dropzone
               id="dropzone"
-              formControlName="foto"
               class="dropzone"
               [config]="config"
               (removedFile)="eliminarImagen($event)"
